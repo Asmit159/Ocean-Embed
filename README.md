@@ -4,7 +4,7 @@ An advanced hybrid deep learning architecture that reconstructs **15 discrete la
 
 ---
 
-##  System Overview
+## System Overview
 
 Ocean dynamics are chaotic and computationally expensive to simulate numerically. OceanEmbed bridges the gap between observable surface conditions and internal physical states by learning a direct mapping to the **3D subsurface temperature structure**.
 
@@ -18,7 +18,7 @@ Ocean dynamics are chaotic and computationally expensive to simulate numerically
 
 ---
 
-##  Neural Architecture
+## Neural Architecture
 
 OceanEmbed utilizes a U-Net-style encoder-decoder framework, replacing traditional bottlenecks with a frequency-domain Multi-Block FNO.
 
@@ -68,9 +68,25 @@ Progressively reconstructs spatial resolution via bilinear upsampling and 1×1 c
 
 ---
 
-##  Performance Benchmarks & Validation
+## Performance Benchmarks & Validation
 
 Evaluated against **GLORYS12V1 reanalysis ground truth** across complex Indian Ocean regions (equatorial currents, Bay of Bengal upwelling, mesoscale eddies).
+
+### Industry SOTA vs. OceanEmbed Benchmark Comparison
+
+| Metric / Feature | OceanEmbed (Proposed Model) | Industry SOTA (Benchmark Models) |
+| --- | --- | --- |
+| **Primary Architecture** | Swin Transformer + FNO + CBAM + Latent Temporal | CNN-LSTM / STGAT / 3D-UNet |
+| **Input Feature Domain** | 11 multi-modal channels (surface physics + DOY + coordinates) | 3 to 4 channels (e.g., SST, SSS, SSH) |
+| **Prediction Resolution** | Daily unsmoothed reanalysis on 0.25° grid | Monthly aggregated mean fields |
+| **Overall RMSE** | 1.0699 °C | 0.34 °C (Monthly ConvLSTM) to 0.916 °C (Daily STGAT) |
+| **Overall R² Score** | 0.9987 | 0.866 (STGAT) to 0.981 (CSSP-ConvLSTM) |
+| **Thermocline Peak Error** | 1.663 °C RMSE (at 100m) | > 1.80 °C RMSE (100m–600m depth band) |
+| **Peak Memory Overhead** | 1.19 GB VRAM (CUDA) / 1.55 GB RAM (CPU) | High-VRAM Multi-GPU Cloud Clusters |
+| **Inference Latency** | 163.58 ms (GPU) / 1.59 s (CPU) | Multiple seconds per 3D volume |
+| **Loss Function** | Multi-term Physics-Informed Stratification Loss | Standard MSE / L1 Loss |
+
+---
 
 ### Quantitative Depth-Wise Evaluation
 
@@ -84,6 +100,12 @@ Evaluated against **GLORYS12V1 reanalysis ground truth** across complex Indian O
 | **500 m (Mesopelagic)** | 0.28 | 0.38 | 0.949 | 99.4% |
 | **1000 m (Deep Abyss)** | 0.14 | 0.19 | 0.971 | 99.9% |
 | **Overall Mean** | **0.31** | **0.42** | **0.951** | **99.2%** |
+
+---
+
+### Empirical Diagnostic & Validation Visualizations
+
+---
 
 ### Expected Results vs Ground Truth (Bay of Bengal Transect)
 
@@ -100,7 +122,7 @@ Evaluated against **GLORYS12V1 reanalysis ground truth** across complex Indian O
 
 ---
 
-##  Physics-Informed Training
+## Physics-Informed Training
 
 The model is optimized using a compound objective function that ensures thermodynamic stability and zeroes out physically impossible density inversions:
 
@@ -112,37 +134,6 @@ $$\mathcal{L}_{total} = \mathcal{L}_{MSE} + \lambda_1\mathcal{L}_{gradient} + \l
 
 ---
 
-##  Full-Stack Application Architecture
-
-OceanEmbed is deployed as an end-to-end inference platform, orchestrating data extraction, neural network processing, and rich client-side 3D rendering.
-
-```mermaid
-graph LR
-    subgraph Frontend
-        UI[React + deck.gl UI]
-    end
-    
-    subgraph Backend Orchestration
-        API[Spring Boot Hub]
-        Cache[(Redis Cache)]
-        DB[(MySQL DB)]
-    end
-    
-    subgraph Machine Learning
-        Data[Copernicus NetCDF Pipeline]
-        Model[PyTorch Inference Service]
-    end
-    
-    UI -->|Geo-Query| API
-    API <--> Cache
-    API <--> DB
-    API --> Data
-    Data --> Model
-    Model -->|15-Layer Volumetric Array| API
-    API -->|Data Stream| UI
-
-```
-
 ### Interactive Visualization Features
 
 1. **Interactive 3D Digital Twin Globe:** High-performance WebGL Earth visualization focused on the Indian EEZ, Arabian Sea, and Bay of Bengal.
@@ -152,7 +143,7 @@ graph LR
 
 ---
 
-##  Technology Stack
+## Technology Stack
 
 | Domain | Technologies Used |
 | --- | --- |
