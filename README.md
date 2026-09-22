@@ -1,5 +1,20 @@
 # 🌊 OceanEmbed: Physics-Guided Latent Representation for 3D Ocean Thermodynamics
 
+<div align="center">
+    
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
+![TorchScript](https://img.shields.io/badge/TorchScript-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
+![CUDA](https://img.shields.io/badge/CUDA-76B900?style=for-the-badge&logo=nvidia&logoColor=white)
+![Intel OpenVINO](https://img.shields.io/badge/Intel_OpenVINO-0068B5?style=for-the-badge&logo=intel&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![WebGL](https://img.shields.io/badge/WebGL-990000?style=for-the-badge&logo=webgl&logoColor=white)
+
+</div>
+
 An advanced **stratified stacking ensemble** deep learning architecture that reconstructs **15 discrete layers of 3D subsurface ocean temperature** from 2D satellite-derived surface observations. By combining two distinct physics-informed base models—integrating the spatial feature extraction of **Swin Transformer V2**, the global spectral modeling of a **Fourier Neural Operator (FNO)**, alongside **Graph Neural Networks (GNN)**, **CBAM Attention**, and **Latent Temporal Modules**—OceanEmbed delivers state-of-the-art subsurface predictions alongside an interactive WebGL-powered geospatial visualization platform.
 
 ---
@@ -100,7 +115,7 @@ graph TD
 
 ### 1. Data Ingestion & CNN Stem
 
-* **Input Tensor:** `[B, 7, 128, 256]` (7 physical channels at 0.25° resolution).
+* **Input Tensor:** `[B, 11, 128, 256]` (7 physical channels at 0.25° resolution).
 * **Channels:** SST, SSS, SSH, U-velocity, V-velocity, Wind U/V.
 * **Stem:** 3×3 Convolutions + GELU map the physical variables into a 96-dimensional embedding space, preparing the data for the Vision Transformer.
 
@@ -135,9 +150,9 @@ Evaluated against **GLORYS12V1 reanalysis ground truth** across complex Indian O
 | **Overall RMSE** | 1.0699 °C | 0.34 °C (Monthly ConvLSTM) to 0.916 °C (Daily STGAT) |
 | **Overall R² Score** | **0.9987 (~8.14% increase)** | 0.866 (STGAT) to 0.981 (CSSP-ConvLSTM) |
 | **Thermocline Peak Error** | **1.663 °C RMSE (at 100m)** | > 1.80 °C RMSE (100m–600m depth band) |
-| **Peak Memory Overhead** | 1.19 GB VRAM (CUDA) / 1.55 GB RAM (CPU) | High-VRAM Multi-GPU Cloud Clusters |
-| **Inference Latency** | 163.58 ms (GPU) / 1.59 s (CPU) | Multiple seconds per 3D volume |
-| **Loss Function** | Multi-term Physics-Informed Stratification Loss | Standard MSE / L1 Loss |
+| **Peak Memory Overhead** | **1.19 GB VRAM** (CUDA) / 1.55 GB RAM (CPU) | High-VRAM Multi-GPU Cloud Clusters |
+| **Inference Latency** | **163.58** ms (GPU) / **1.59 s** (CPU) | Multiple seconds per 3D volume |
+| **Loss Function** | **Multi-term Physics-Informed Stratification Loss** | Standard MSE / L1 Loss |
 
 ---
 
@@ -153,25 +168,6 @@ Evaluated against **GLORYS12V1 reanalysis ground truth** across complex Indian O
 | **500 m (Mesopelagic)** | 0.28 | 0.38 | 0.949 | 99.4% |
 | **1000 m (Deep Abyss)** | 0.14 | 0.19 | 0.971 | 99.9% |
 | **Overall Mean** | **0.31** | **0.42** | **0.951** | **99.2%** |
-
----
-
-### Empirical Diagnostic & Validation Visualizations
-
----
-
-### Results vs Ground Truth (Bay of Bengal Transect)
-
-*Location: 15°N–20°N, 90°E–95°E (Monsoon Transition)*
-
-| Depth | Predicted Temp | Ground Truth | Absolute Error |
-| --- | --- | --- | --- |
-| **0 m** | 28.9°C | 28.9°C | 0.00°C |
-| **50 m** | 26.8°C | 26.5°C | 0.30°C |
-| **100 m** | 21.6°C | 21.2°C | 0.40°C |
-| **150 m** | 16.5°C | 16.2°C | 0.30°C |
-| **500 m** | 7.9°C | 7.8°C | 0.10°C |
-| **1000 m** | 3.7°C | 3.7°C | 0.00°C |
 
 ---
 
