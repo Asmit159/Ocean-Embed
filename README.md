@@ -115,7 +115,7 @@ graph TD
 
 ### 1. Data Ingestion & CNN Stem
 
-* **Input Tensor:** `[B, 11, 128, 256]` (7 physical channels at 0.25° resolution).
+* **Input Tensor:** `[B, 11, 128, 256]` (11 physical channels at 0.25° resolution).
 * **Channels:** SST, SSS, SSH, U-velocity, V-velocity, Wind U/V.
 * **Stem:** 3×3 Convolutions + GELU map the physical variables into a 96-dimensional embedding space, preparing the data for the Vision Transformer.
 
