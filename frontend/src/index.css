@@ -1,0 +1,406 @@
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes strobe {
+  0% { opacity: 0.4; }
+  50% { opacity: 1; }
+  100% { opacity: 0.4; }
+}
+
+@keyframes slideInRight {
+  from { 
+    transform: translateX(100%); 
+    opacity: 0;
+  }
+  to { 
+    transform: translateX(0); 
+    opacity: 1;
+  }
+}
+
+.loading-active .globe-label {
+  opacity: 0 !important;
+}
+
+.intro-active .globe-label {
+  animation: fadeIn 1.5s ease-in-out forwards;
+}
+
+.sidebar-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 350px;
+  height: 100%;
+  background: rgba(4, 21, 45, 0.85);
+  backdrop-filter: blur(16px);
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+  z-index: 9999;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'Inter', sans-serif;
+  box-shadow: -8px 0 40px rgba(0, 0, 0, 0.5);
+  animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  display: flex;
+  flex-direction: column;
+  padding: 32px 36px;
+}
+
+@keyframes slideOutRight {
+  from { 
+    transform: translateX(0); 
+    opacity: 1;
+  }
+  to { 
+    transform: translateX(100%); 
+    opacity: 0;
+  }
+}
+
+.sidebar-panel-closing {
+  animation: slideOutRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  background-color: #ffffff;
+  touch-action: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Glassmorphism utilities */
+.glass-panel {
+  background: rgba(11, 35, 66, 0.45);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+  color: #fff;
+}
+
+.pill-button {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 9999px;
+  padding: 10px 20px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  color: #012a4a;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.pill-button:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.pill-button:active {
+  transform: translateY(0);
+}
+
+/* ─── Coordinate Search Bar ──────────────────────────────────────────────── */
+
+@keyframes pinPulse {
+  0%   { transform: translate(-50%, -50%) scale(1);   opacity: 0.8; }
+  100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+}
+
+@keyframes pinFadeIn {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+@keyframes toastFadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes toastFadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-6px); }
+}
+
+.coordinate-search {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 16px;
+  background: rgba(10, 25, 45, 0.85);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(139, 182, 214, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  z-index: 1000;
+  font-family: 'Inter', sans-serif;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+}
+
+.coordinate-search:focus-within {
+  border-color: rgba(139, 182, 214, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(139, 182, 214, 0.15);
+}
+
+.coordinate-search .coord-field {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.coordinate-search .coord-input {
+  width: 58px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s ease, background 0.2s ease;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.coordinate-search .coord-input::-webkit-outer-spin-button,
+.coordinate-search .coord-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.coordinate-search .coord-input:focus {
+  border-color: rgba(139, 182, 214, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.coordinate-search .coord-input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.coordinate-search .coord-unit {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+  user-select: none;
+}
+
+.coordinate-search .coord-divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0 4px;
+}
+
+.coordinate-search .search-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(139, 182, 214, 0.2);
+  color: #8bb6d6;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.coordinate-search .search-btn:hover {
+  background: rgba(139, 182, 214, 0.35);
+  transform: scale(1.05);
+}
+
+.coordinate-search .search-btn:active {
+  transform: scale(0.95);
+}
+
+.search-error-toast {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: rgba(40, 10, 10, 0.75);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 60, 60, 0.25);
+  color: #ff6b6b;
+  font-size: 12px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: toastFadeIn 0.25s ease forwards;
+}
+
+.search-error-toast.hiding {
+  animation: toastFadeOut 0.3s ease forwards;
+}
+
+/* Globe drop pin */
+.globe-drop-pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  position: relative;
+}
+
+.globe-drop-pin .pin-head {
+  animation: pinFadeIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.4), inset 0 0 2px rgba(0, 0, 0, 0.5);
+  position: relative;
+  z-index: 2;
+}
+
+.globe-drop-pin .pin-head::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  animation: pinPulse 2s ease-out infinite;
+  z-index: 1;
+}
+
+.globe-drop-pin .pin-stem {
+  display: none;
+}
+
+/* Remove default focus outline from Recharts */
+.recharts-wrapper,
+.recharts-surface,
+.recharts-responsive-container {
+  outline: none !important;
+}
+
+/* ─── Date Stepper ───────────────────────────────────────────────────────── */
+
+.date-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  background: rgba(4, 21, 45, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(139, 182, 214, 0.2);
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  margin-top: auto;
+  width: 100%;
+}
+
+.date-stepper-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.date-stepper-chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 22px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: rgba(139, 182, 214, 0.6);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+.date-stepper-chevron:hover:not(:disabled) {
+  background: rgba(139, 182, 214, 0.15);
+  color: rgba(139, 182, 214, 1);
+  transform: scale(1.1);
+}
+
+.date-stepper-chevron:active:not(:disabled) {
+  transform: scale(0.92);
+  background: rgba(139, 182, 214, 0.25);
+}
+
+.date-stepper-chevron:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.date-stepper-value {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.3px;
+  user-select: none;
+  line-height: 1;
+  min-width: 36px;
+  text-align: center;
+}
+
+.date-stepper-input {
+  width: 44px;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0 2px;
+  border-bottom: 1px solid rgba(139, 182, 214, 0.5);
+  border-radius: 0;
+  user-select: text;
+}
+.date-stepper-input:focus {
+  border-bottom-color: rgba(139, 182, 214, 1);
+}
+
+.date-stepper-month {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.date-stepper-divider {
+  width: 1px;
+  height: 36px;
+  background: rgba(139, 182, 214, 0.15);
+  margin: 0 6px;
+  flex-shrink: 0;
+}
