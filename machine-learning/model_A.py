@@ -84,7 +84,7 @@ class LatentGraphReasoning(nn.Module):
         theta_x, phi_x, val_x = self.theta(x).view(B, self.hidden_dim, -1).permute(0, 2, 1), self.phi(x).view(B, self.hidden_dim, -1), self.val(x).view(B, self.hidden_dim, -1).permute(0, 2, 1)
         adj = torch.bmm(theta_x, phi_x) * (self.hidden_dim ** -0.5)
         topk_vals, topk_indices = torch.topk(adj, k=self.k, dim=-1)
-        # Fix for ONNX: use scatter instead of in-place scatter_
+
         sparse_adj = torch.full_like(adj, fill_value=-1e4).scatter(-1, topk_indices, topk_vals)
         graph_out = self.gcn_conv(torch.bmm(F.softmax(sparse_adj, dim=-1), val_x)).permute(0, 2, 1).view(B, C, H, W)
         return x + (self.gamma * graph_out)
