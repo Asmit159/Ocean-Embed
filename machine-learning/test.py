@@ -179,9 +179,8 @@ def plot_vertical_profile(gt_profile, pred_profile, mask_profile, year):
     plt.savefig(os.path.join(REPORT_DIR, f"07_vertical_profile_{year}.png"), dpi=300)
     plt.close()
 
-# ==============================================================================
-# 5. MASTER EVALUATION ENGINE
-# ==============================================================================
+
+
 def run_full_metrics_suite():
     print("\n" + "="*60)
     print(f"{YEAR_TO_TEST}")
@@ -198,7 +197,6 @@ def run_full_metrics_suite():
     ckpt = torch.load(BEST_CKPT_PATH, map_location="cpu", weights_only=False)
     x_stats, y_stats = ckpt["x_stats"], ckpt["y_stats"]
     
-    # Bypass TorchScript and load Native PyTorch model onto GPU
     print("Loading native PyTorch architecture onto GPU...")
     infer_engine = OceanEmbed().to(DEVICE)
     infer_engine.load_state_dict(ckpt.get("model_state_dict", ckpt))
