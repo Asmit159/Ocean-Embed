@@ -140,6 +140,16 @@ Progressively reconstructs spatial resolution via bilinear upsampling and 1×1 c
 
 Evaluated against **GLORYS12V1 reanalysis ground truth** across complex Indian Ocean regions (equatorial currents, Bay of Bengal upwelling, mesoscale eddies).
 
+<div align="center">
+    
+| Model Metrics |Hardware Metrics |
+| :---: | :---: |
+| <img width="341" height="111" alt="Screenshot 2026-09-26 000600" src="https://github.com/user-attachments/assets/c5fa4899-d2fe-4906-be65-47b50da1ec63" />|<img width="347" height="122" alt="Screenshot 2026-09-26 000801" src="https://github.com/user-attachments/assets/733c3f81-88dd-49ba-973a-9cba162434f0" />|
+
+</div>
+
+
+
 ### Industry SOTA vs. OceanEmbed Benchmark Comparison
 
 | Metric / Feature | OceanEmbed (Proposed Model) | Industry SOTA (Benchmark Models) |
