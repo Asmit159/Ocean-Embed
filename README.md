@@ -17,9 +17,15 @@
 
 An advanced **stratified stacking ensemble** deep learning architecture that reconstructs **15 discrete layers of 3D subsurface ocean temperature** from 2D satellite-derived surface observations. By combining two distinct physics-informed base models—integrating the spatial feature extraction of **Swin Transformer V2**, the global spectral modeling of a **Fourier Neural Operator (FNO)**, alongside **Graph Neural Networks (GNN)**, **CBAM Attention**, and **Latent Temporal Modules**—OceanEmbed delivers state-of-the-art subsurface predictions alongside an interactive WebGL-powered geospatial visualization platform.
 
+An advanced **stratified stacking ensemble** deep learning architecture...
+
+
+
 <div align="center">
-  <video src="assets/OceanEmbed_Showcase.mp4" autoplay loop muted playsinline width="100%"></video>
+  <video src="https://github.com/user-attachments/assets/444278ad-e0fb-43ac-9991-724d4549efbb" autoplay loop muted playsinline width="100%"></video>
 </div>
+
+
 ---
 
 ## System Overview
