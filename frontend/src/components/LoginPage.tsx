@@ -39,8 +39,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onNavigateToSignup }) =>
       // Store token based on rememberMe preference
       if (rememberMe) {
         localStorage.setItem('token', data.access_token);
+        sessionStorage.removeItem('token');
       } else {
         sessionStorage.setItem('token', data.access_token);
+        localStorage.removeItem('token');
       }
 
       onLogin();

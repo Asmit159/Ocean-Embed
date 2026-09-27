@@ -88,7 +88,7 @@ def process_grid(ds: xr.Dataset, var_name: str, lat: float, lon: float, date_str
     target_lat = np.linspace(lat, lat + 4.75, 20, dtype=np.float32)
     target_lon = np.linspace(lon, lon + 4.75, 20, dtype=np.float32)
     
-    da = da.interp({lat_dim: target_lat, lon_dim: target_lon}, method="linear", kwargs={"fill_value": "extrapolate"})
+    da = da.interp({lat_dim: target_lat, lon_dim: target_lon}, method="linear")
     
     arr = np.asarray(da.transpose(lat_dim, lon_dim).values, dtype=np.float32)
     if k2c:
@@ -104,10 +104,10 @@ def fetch_copernicus_sync(dataset_id: str, lat: float, lon: float, date_str: str
     try:
         copernicusmarine.subset(
             dataset_id=dataset_id,
-            minimum_longitude=lon,
-            maximum_longitude=lon+5.0,
-            minimum_latitude=lat,
-            maximum_latitude=lat+5.0,
+            minimum_longitude=lon - 0.5,
+            maximum_longitude=lon + 5.5,
+            minimum_latitude=lat - 0.5,
+            maximum_latitude=lat + 5.5,
             start_datetime=f"{date_str} 00:00:00",
             end_datetime=f"{date_str} 23:59:59",
             minimum_depth=0.0,
@@ -161,10 +161,10 @@ def fetch_copernicus_vector_sync(dataset_id: str, lat: float, lon: float, date_s
     try:
         copernicusmarine.subset(
             dataset_id=dataset_id,
-            minimum_longitude=lon,
-            maximum_longitude=lon+5.0,
-            minimum_latitude=lat,
-            maximum_latitude=lat+5.0,
+            minimum_longitude=lon - 0.5,
+            maximum_longitude=lon + 5.5,
+            minimum_latitude=lat - 0.5,
+            maximum_latitude=lat + 5.5,
             start_datetime=f"{date_str} 00:00:00",
             end_datetime=f"{date_str} 23:59:59",
             minimum_depth=0.0,
@@ -224,10 +224,10 @@ def fetch_copernicus_wind_vector_sync(dataset_id: str, lat: float, lon: float, d
     try:
         copernicusmarine.subset(
             dataset_id=dataset_id,
-            minimum_longitude=lon,
-            maximum_longitude=lon+5.0,
-            minimum_latitude=lat,
-            maximum_latitude=lat+5.0,
+            minimum_longitude=lon - 0.5,
+            maximum_longitude=lon + 5.5,
+            minimum_latitude=lat - 0.5,
+            maximum_latitude=lat + 5.5,
             start_datetime=f"{date_str} 12:00:00",
             end_datetime=f"{date_str} 12:00:00",
             output_filename=file_path,
@@ -334,7 +334,7 @@ def fetch_nasa_sync(short_names: List[str], lat: float, lon: float, date_str: st
         results = earthaccess.search_data(
             short_name=short_name,
             temporal=(f"{date_str}T00:00:00", f"{date_str}T23:59:59"),
-            bounding_box=(lon, lat, lon+5.0, lat+5.0),
+            bounding_box=(lon - 0.5, lat - 0.5, lon + 5.5, lat + 5.5),
             count=1
         )
         if results:

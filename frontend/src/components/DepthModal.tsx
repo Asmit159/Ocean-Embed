@@ -116,7 +116,7 @@ const SurfacePlot: React.FC<SurfacePlotProps> = ({ layerData, baseTemp, zScale, 
           zHeight = 0;
           vertexColor = new THREE.Color('#333333'); // Distinct flat gray for landmass
         } else {
-          zHeight = (t - midTemp) * zScale;
+          zHeight = (t - baseTemp) * zScale;
           const normalized = Math.max(0, Math.min(1, (t - minTemp) / (maxTemp - minTemp)));
           vertexColor = getViridisColor(normalized);
         }
@@ -190,9 +190,9 @@ const SurfacePlot: React.FC<SurfacePlotProps> = ({ layerData, baseTemp, zScale, 
       exactTemp = t11 + (1 - u) * (t01 - t11) + (1 - v) * (t10 - t11);
     }
 
-    const surfaceZ = (exactTemp - midTemp) * zScale;
+    const surfaceZ = (exactTemp - baseTemp) * zScale;
     return { x, y, z: surfaceZ, temp: exactTemp };
-  }, [searchedLocation, latRange, lngRange, layerData, zScale]);
+  }, [searchedLocation, latRange, lngRange, layerData, zScale, baseTemp]);
 
   return (
     <group rotation={[-Math.PI / 2, 0, 0]}>
@@ -636,7 +636,7 @@ const RaycastFixer = () => {
 const DepthModal: React.FC<DepthModalProps> = ({ isOpen, onClose, predictions, latRange, lngRange, searchedLocation }) => {
   const [selectedLayer, setSelectedLayer] = useState<number | null>(null);
   const [isProfileLoading, setIsProfileLoading] = useState(isOpen);
-  const [zScale, setZScale] = useState(2.5);
+  const [zScale, setZScale] = useState(1.5);
   const [autoRotate, setAutoRotate] = useState(true);
   const backdropPointerDown = useRef(false);
 

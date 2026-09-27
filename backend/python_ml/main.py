@@ -279,11 +279,7 @@ async def get_available_dates(
     x_trace_id: Optional[str] = Header(None, alias="x-trace-id"),
 ):
     trace_id = x_trace_id or f"py-{int(time.time()*1000)}"
-    if is_cell_landmass(lat, lon):
-        return JSONResponse(
-            status_code=status.HTTP_404_NOT_FOUND,
-            content={"error_code": "LANDMASS", "message": "Selected coordinates are over land.", "trace_id": trace_id},
-        )
+
     dates = get_available_dates_for_cell(lat, lon)
     return {"available_dates": dates}
 
@@ -307,11 +303,7 @@ async def get_historical(
     x_trace_id: Optional[str] = Header(None, alias="x-trace-id"),
 ):
     trace_id = x_trace_id or f"py-{int(time.time()*1000)}"
-    if is_cell_landmass(lat, lon):
-        return JSONResponse(
-            status_code=status.HTTP_404_NOT_FOUND,
-            content={"error_code": "LANDMASS", "message": "Selected coordinates are over land.", "trace_id": trace_id},
-        )
+
     import asyncio
     series = await asyncio.to_thread(get_historical_time_series, lat, lon, metric, end_date, 14)
     return {"time_series": series}
