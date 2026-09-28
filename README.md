@@ -214,21 +214,22 @@ $$\mathcal{L}_{total} = \mathcal{L}_{MSE} + \lambda_1\mathcal{L}_{gradient} + \l
 
 ### Parameter Count
 
-| Metric | Specification |
-| :--- | :--- |
-| **Total Parameters** | **134,762,171 (134.76 M)** |
-| **Trainable Parameters** | **134,762,171 (100.0%)** |
-| **Non-Trainable (Frozen) Parameters** | **0** |
-| **FP32 Weight Footprint** | **514.08 MB** |
-| **FP16 (AMP) Weight Footprint** | **257.04 MB** |
-| **Input Tensor Resolution** | `(B, 11, 128, 256)` *(Padded Surface Grid)* |
-| **Output Tensor Resolution** | `(B, 15, 101, 241)` *(15 Subsurface Depth Horizons)*[cite: 4] |
+### Ensemble System Summary
+
+| Component / Model | Specialist Role | Parameters | FP32 Footprint | FP16 (AMP) Size |
+| :--- | :--- | ---: | ---: | ---: |
+| **Branch 1 (`OceanEmbed-GNN`)** | Non-local basin teleconnections via Sparse Latent GNN | **~134.69 M** (`134,687,833`) | 513.80 MB | 256.90 MB |
+| **Branch 2 (`OceanEmbed-TempCBAM`)** | Mesoscale eddy attention (CBAM) & sequential heat penetration | **134.76 M** (`134,762,171`) | 514.08 MB | 257.04 MB |
+| **Ensemble Meta-Learner** | Stratified depth-wise stacking across 15 depth horizons | **~0.01 M** (`~5,000`) | 0.02 MB | 0.01 MB |
+| **Full Ensemble Total** | **Dual-Branch End-to-End Inference Pipeline** | **~269.46 M** (`~269,455,004`) | **~1.00 GB** (`1,027.90 MB`) | **513.95 MB** |
 
 ---
 
-### Layer-by-Layer Parameter Breakdown
+### Single-Branch Layer-by-Layer Breakdown (Branch 2: `OceanEmbed-TempCBAM`)
 
-| Module Name | Class / Layer Type | Role in Pipeline | Parameters | % Share |
+Each specialist branch shares the same **Swin-V2 Encoder**, **3-Stage FNO Bottleneck**, and **Multi-Scale Skip Decoder** (`134,490,201` base parameters per branch), differing only in the latent specialist module (`LatentGNN` in Branch 1 vs. `CBAM + LatentTemporalModule` in Branch 2):
+
+| Module Name | Class / Layer Type | Role in Pipeline | Parameters | % of Branch |
 | :--- | :--- | :--- | ---: | ---: |
 | **`stem`** | `nn.Sequential` | 11-ch surface feature projection ($11 \rightarrow 64 \rightarrow 96$) | 49,568 | 0.04% |
 | **`stage1`** | `SwinTransformerV2Stage` | Hierarchical spatial encoding ($C=96$, Skip 1) | 229,638 | 0.17% |
@@ -236,34 +237,20 @@ $$\mathcal{L}_{total} = \mathcal{L}_{MSE} + \lambda_1\mathcal{L}_{gradient} + \l
 | **`stage3`** | `SwinTransformerV2Stage` | Hierarchical spatial encoding ($C=384$, Skip 3) | 10,986,312 | 8.15% |
 | **`stage4`** | `SwinTransformerV2Stage` | Deepest spatial bottleneck ($C=768$) | 15,383,088 | 11.41% |
 | **`latent_proj_in`** | `nn.Conv2d` | Channel compression ($768 \rightarrow 256$, $1\times1$) | 196,864 | 0.15% |
-| **`fno`** | `nn.Sequential` | **3-Stage Fourier Neural Operator Bottleneck**[cite: 4] | **100,860,672** | **74.84%** |
+| **`fno`** | `nn.Sequential` | **3-Stage Fourier Neural Operator Bottleneck** | **100,860,672** | **74.84%** |
 | &nbsp;&nbsp;├─ `fno[0]` | `FNOBottleneck` | 2D FFT Spectral Conv ($C=256$, modes=$8\times16$) | 33,620,224 | 24.95% |
 | &nbsp;&nbsp;├─ `fno[1]` | `FNOBottleneck` | 2D FFT Spectral Conv ($C=256$, modes=$8\times16$) | 33,620,224 | 24.95% |
 | &nbsp;&nbsp;└─ `fno[2]` | `FNOBottleneck` | 2D FFT Spectral Conv ($C=256$, modes=$8\times16$) | 33,620,224 | 24.95% |
-| **`cbam`** | `CBAM` | Dual Channel & Spatial Attention ($C=256$, $K=7\times7$)[cite: 4] | 8,290 | 0.01% |
-| **`temporal`** | `LatentTemporalModule` | Multi-Head Latent Temporal Attention ($C=256$, $H=4$)[cite: 4] | 263,680 | 0.20% |
+| **`cbam`** *(Branch 2)* | `CBAM` | Dual Channel & Spatial Attention ($C=256$, $K=7\times7$) | 8,290 | 0.01% |
+| **`temporal`** *(Branch 2)*| `LatentTemporalModule` | Multi-Head Latent Temporal Attention ($C=256$, $H=4$) | 263,680 | 0.20% |
+| **`gnn`** *(Branch 1 alt.)* | `LatentGNN` | Top-$K$ Sparse Graph Message Passing ($C=256$, $K=8$) | ~197,632 | ~0.15% |
 | **`latent_proj_out`** | `nn.Conv2d` | Channel expansion ($256 \rightarrow 768$, $1\times1$) | 197,376 | 0.15% |
 | **`dec_stage3`** | `DecoderBlock` | Bilinear upsample + Skip 3 fusion ($768 \rightarrow 384$) | 4,276,224 | 3.17% |
 | **`dec_stage2`** | `DecoderBlock` | Bilinear upsample + Skip 2 fusion ($384 \rightarrow 192$) | 1,069,056 | 0.79% |
 | **`dec_stage1`** | `DecoderBlock` | Bilinear upsample + Skip 1 fusion ($192 \rightarrow 96$) | 267,264 | 0.20% |
-| **`head`** | `nn.Conv2d` | Subsurface depth projection ($96 \rightarrow 15$, $1\times1$)[cite: 4] | 1,455 | <0.01% |
-| **Total** | **`OceanEmbed`** | **End-to-End Physics-Informed Architecture** | **134,762,171** | **100.00%** |
-
----
-
-### Macro-Component Distribution
-
-| Subsystem | Combined Parameters | Share of Model |
-| :--- | ---: | ---: |
-| **Fourier Neural Operator (`fno` Bottleneck)**[cite: 4] | 100,860,672 | **74.84%** |
-| **Swin-V2 Spatial Encoder (`stem` + `stage1–4`)**[cite: 4] | 27,621,290 | **20.50%** |
-| **Multi-Scale U-Net Decoder (`dec_stage1–3` + `head`)**[cite: 4] | 5,614,000 | **4.17%** |
-| **Latent Projections + Attention (`cbam` + `temporal`)**[cite: 4] | 666,210 | **0.49%** |
-
-### Key Architectural Highlights
-* **ONNX-Safe Spectral Convolutions:** Complex Fourier weights in `SpectralConv2d` are parameterized explicitly as real-valued `torch.float32` tensors of shape `(256, 256, 8, 16, 2)`, enabling compatibility with mixed-precision (`FP16`) training and TorchScript/ONNX deployment pipelines.
-* **Frequency-Domain Fluid Physics (74.84% of capacity):** Three stacked `FNOBottleneck` blocks dedicate **100.86M parameters** to learning global, resolution-invariant quasi-geostrophic and thermodynamic operators in the Fourier domain[cite: 4].
-* **Lightweight Spatiotemporal Refinement (<0.5% overhead):** The `CBAM` and `LatentTemporalModule` blocks refine localized eddy structures and sequential heat penetration while adding only **271,970 parameters** combined[cite: 4].
+| **`head`** | `nn.Conv2d` | Subsurface depth projection ($96 \rightarrow 15$, $1\times1$) | 1,455 | <0.01% |
+| **Single Branch Total** | **`OceanEmbed` (Branch 2)** | **Single Specialist Branch** | **134,762,171** | **100.00%** |
+| **Full Ensemble Total** | **Branch 1 + Branch 2 + Meta** | **Complete Dual-Branch Ensemble** | **~269,455,004** | **—** |
 ---
 
 ### Empirical Validation & Diagnostic Suite
