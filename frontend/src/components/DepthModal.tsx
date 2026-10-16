@@ -98,7 +98,6 @@ const SurfacePlot: React.FC<SurfacePlotProps> = ({ layerData, baseTemp, zScale, 
       maxTemp = minTemp + 0.1;
     }
 
-    const midTemp = (minTemp + maxTemp) / 2;
 
     for (let y = 0; y < gridRes; y++) {
       if (!layerData[y]) continue;
@@ -155,7 +154,6 @@ const SurfacePlot: React.FC<SurfacePlotProps> = ({ layerData, baseTemp, zScale, 
       }
     }
     if (maxTemp === minTemp) { maxTemp = minTemp + 0.1; }
-    const midTemp = (minTemp + maxTemp) / 2;
 
     const size = 5;
     const x = ((lon - lngRange[0]) / (lngRange[1] - lngRange[0]) - 0.5) * size;

@@ -35,6 +35,9 @@ async def run_profile_task(task_id: str, lat: float, lon: float, date: str, trac
         
         TASK_STORE[task_id]["progress"] = 80
         
+        if not ModelSingleton.is_loaded():
+            raise Exception("Model is not loaded (LOAD_MODEL=false).")
+
         model = ModelSingleton.get_model()
         device = ModelSingleton.get_device()
         
@@ -125,9 +128,13 @@ async def lifespan(app: FastAPI):
     FastAPI Lifespan: loads model into global memory once at startup via ModelSingleton,
     and authenticates NASA/Copernicus API sessions.
     """
-    logger.info("Starting Python ML Service. Initializing ModelSingleton...")
-    ModelSingleton.initialize(MODEL_PATH)
-    logger.info("ModelSingleton initialized successfully.")
+    load_model = os.getenv("LOAD_MODEL", "true").lower() == "true"
+    if load_model:
+        logger.info("Starting Python ML Service. Initializing ModelSingleton...")
+        ModelSingleton.initialize(MODEL_PATH)
+        logger.info("ModelSingleton initialized successfully.")
+    else:
+        logger.info("LOAD_MODEL is false. Skipping ModelSingleton initialization.")
     
     logger.info("Authenticating OPeNDAP APIs...")
     authenticate_apis()
@@ -201,6 +208,9 @@ async def get_ocean_profile(
             TASK_STORE[task_id] = {"status": "queued", "progress": 0}
             background_tasks.add_task(run_profile_task, task_id, lat, lon, date, trace_id)
             return {"task_id": task_id, "status": "processing", "progress": 0}
+
+        if not ModelSingleton.is_loaded():
+            raise HTTPException(status_code=503, detail="Model is not loaded (LOAD_MODEL=false)")
 
         model = ModelSingleton.get_model()
         device = ModelSingleton.get_device()

@@ -4,6 +4,11 @@
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+export let inMemoryToken: string | null = null;
+export const setInMemoryToken = (token: string | null) => {
+  inMemoryToken = token;
+};
+
 // ─── TypeScript Interfaces (mirrors backend Pydantic schemas) ─────────────────
 
 export interface SurfaceInputs {
@@ -108,7 +113,7 @@ async function fetchWithTracing(url: string, options: RequestInit = {}, traceId?
   if (traceId) headers.set('x-trace-id', traceId);
   
   // Inject JWT token for authenticated Node Gateway routes
-  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token') || inMemoryToken;
   if (token) {
     headers.set('Authorization', `Bearer ${token}`);
   }
