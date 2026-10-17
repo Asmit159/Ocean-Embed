@@ -1,4 +1,4 @@
-# 🌊 OceanEmbed: Physics-Guided Latent Representation for 3D Ocean Thermodynamics
+#  OceanEmbed: Physics-Guided Latent Representation for 3D Ocean Thermodynamics
 
 <div align="center">
     
